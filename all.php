@@ -1,27 +1,26 @@
 <?php
-    header('Content-type: application/json');
 
-    /* Listar todos los archivos de un directorio con PHP */
+    /*
+    Función para listar contenido de un directorio
+    */
     function list_files( string $path ): array{
-        
+
         $data = [];
         $path = realpath($path);
 
         foreach( new DirectoryIterator($path) as $f ){
-
-            $path_info = pathinfo($f);
             
-            #Evitamos los archivos '.', '..' que son accesos directos
-            if( $path_info['basename'] != '.' && $path_info['basename'] != '..' ){
+            //Evitamos los archivos '.', '..' que son accesos directos
+            if( $f->getBasename() != '.' && $f->getBasename() != '..' ){
 
-                #En caso de que se trate de un directorío usamos recursividad
-                if( is_dir($path.'/'.$path_info['basename']) ){
+                //En caso de que se trate de un directorío usamos recursividad
+                if( is_dir($path.'/'.$f->getBasename()) ){
+                    $data[$f->getBasename()] = list_files( $path.'/'.$f->getBasename() );
 
-                    $contain = list_files( $path.'/'.$path_info['basename'] );
-                    if( $contain ) $data[$path_info['basename']] = $contain;
-
-                #En caso de solo ser un archivo lo añadimos a la lista
-                }else $data[$path_info['basename']] = $path_info['basename'];
+                //En caso de solo ser un archivo lo añadimos a la lista
+                }else{
+                    $data[$f->getBasename()] = $f->getBasename();
+                }
 
             }
         }
@@ -29,6 +28,8 @@
         return $data;
     }
 
-    $list = list_files('../neuralpin');
+    $list = list_files('');
 
+    //Mostramos lista de archivos en formato JSON
+    header('Content-type: application/json');
     echo json_encode($list);
