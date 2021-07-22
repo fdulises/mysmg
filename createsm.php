@@ -9,8 +9,11 @@
     //Ubicación y nombre del sitemap resultante
     define('SITEMAP_OUTPUT', 'sitemap.xml');
 
-    //Ubicación y nombre del sitemap resultante
+    //Nombre de dominio para el proyecto
     define('SITE_DOMAIN', 'https://neuralpin.com');
+
+    //Definimos si queremos o no URLs amigables
+    define('IS_FRIENDLY', true);
 
     //Archivos o carpetas a evitar
     define('IGNORED_LIST', [
@@ -18,6 +21,9 @@
         realpath(PATH_DIR.'/.git'),
         realpath(PATH_DIR.'/_cms'),
         realpath(PATH_DIR.'/theme'),
+        realpath(PATH_DIR.'/frontend/html-css.html'),
+        realpath(PATH_DIR.'/frontend/html.html'),
+        realpath(PATH_DIR.'/php/index.html'),
     ]);
 
     //Extensiones de los archivos a añadir al sitemap
@@ -71,16 +77,20 @@
     //Función para Generar <url>
     function genetareLink( string $link ): string{
         global $url;
-        $newurl = preg_replace('/\[url\]/i', SITE_DOMAIN.'/'.$link, $url[0]);
-        return $newurl;
+        return preg_replace('/\[url\]/i', trim(SITE_DOMAIN.'/'.$link, '/'), $url[0]);
     }
 
     //Función para generar listado de <url>
     function parseList( array $data, string $parent = '' ): array{
         static $links = [];
         foreach( $data as $k => $i ){
-            if( is_string($i) ) $links[] = genetareLink("{$parent}{$i}");
-            else parseList( $i, "{$k}/" );
+            if( is_string($i) ){
+                if( IS_FRIENDLY ){
+                    $i = pathinfo($i)['filename'];
+                    if( $i == 'index' ) $i = '';
+                }
+                $links[] = genetareLink("{$parent}{$i}");
+            }else parseList( $i, "{$k}/" );
         }
         return $links;
     }
