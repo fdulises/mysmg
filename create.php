@@ -4,10 +4,10 @@
     */
 
     //Ubicación del directorio a analizar
-    define('PATH_DIR', '../neuralpin');
+    define('PATH_DIR', realpath(__DIR__ . '\\..\\neuralpin'));
 
     //Ubicación y nombre del sitemap resultante
-    define('SITEMAP_OUTPUT', 'sitemap.xml');
+    define('SITEMAP_OUTPUT', PATH_DIR.'\sitemap2.xml');
 
     //Nombre de dominio para el proyecto
     define('SITE_DOMAIN', 'https://neuralpin.com');
@@ -17,13 +17,13 @@
 
     //Archivos o carpetas a evitar
     define('IGNORED_LIST', [
-        realpath(PATH_DIR.'/404.html'),
-        realpath(PATH_DIR.'/.git'),
-        realpath(PATH_DIR.'/_cms'),
-        realpath(PATH_DIR.'/theme'),
-        realpath(PATH_DIR.'/frontend/html-css.html'),
-        realpath(PATH_DIR.'/frontend/html.html'),
-        realpath(PATH_DIR.'/php/index.html'),
+        PATH_DIR.'\404.html',
+        PATH_DIR.'\.git',
+        PATH_DIR.'\_cms',
+        PATH_DIR.'\theme',
+        PATH_DIR.'\frontend\html-css.html',
+        PATH_DIR.'\frontend\html.html',
+        PATH_DIR.'\php\index.html',
     ]);
 
     //Extensiones de los archivos a añadir al sitemap
@@ -33,7 +33,6 @@
     function list_files( string $path ): array{
         
         $data = [];
-        $path = realpath($path);
 
         foreach( new DirectoryIterator($path) as $f ){
             
@@ -46,10 +45,10 @@
             ){
 
                 //En caso de que se trate de un directorío usamos recursividad
-                if( is_dir($path.'/'.$f->getBasename()) ){
+                if( is_dir($path.'\\'.$f->getBasename()) ){
 
                     //Si el directorio estaba vacío no lo añadimos
-                    $newlist = list_files( $path.'/'.$f->getBasename() );
+                    $newlist = list_files( $path.'\\'.$f->getBasename() );
                     if( $newlist ) $data[$f->getBasename()] = $newlist;
 
                 //En caso de solo ser un archivo lo añadimos a la lista
@@ -69,7 +68,7 @@
     $list = list_files(PATH_DIR);
 
     //Obtenemos la plantilla xml para el sitemap
-    $xmltemplate = file_get_contents('template.xml');
+    $xmltemplate = file_get_contents( __DIR__ .'\\template.xml' );
 
     //obtenemos el elemento xml para las <ulr>
 	preg_match('/<url>(.*)<\/url>/is',$xmltemplate,$url);
