@@ -14,7 +14,7 @@ function list_files( string $path ): array{
         if( $f->getBasename() != '.' && $f->getBasename() != '..' ){
 
             //En caso de que se trate de un directorío usamos recursividad
-            if( is_dir($path.'/'.$f->getBasename()) ){
+            if( $f->isDir() ){
                 $data[$f->getBasename()] = list_files( $path.'/'.$f->getBasename() );
 
             //En caso de solo ser un archivo lo añadimos a la lista
